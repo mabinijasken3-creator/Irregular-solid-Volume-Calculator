@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Volume Calculator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+  <h2>Volume of Revolution (Disk Method)</h2>
+
+  <input id="func" placeholder="Enter f(x): e.g. x^2, sin(x), e^x">
+
+  <div class="row">
+    <input id="min" type="number" value="0">
+    <input id="max" type="number" value="5">
+  </div>
+
+  <button onclick="calculate()">Calculate</button>
+
+  <p id="fname"></p>
+  <p id="result"></p>
+
+  <canvas id="graph"></canvas>
+</div>
+
+<!-- Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/mathjs@11/lib/browser/math.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script src="app.js"></script>
+
+</body>
+</html>
