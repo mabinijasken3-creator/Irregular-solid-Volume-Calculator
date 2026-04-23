@@ -130,7 +130,7 @@ function drawGraph(funcData, areaData) {
           grid: { color: "#333" }
         }
       }
-    }
+    }}
   });
 }
 
