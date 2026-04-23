@@ -86,10 +86,8 @@ function calculate() {
 
   document.getElementById("fname").innerText =
     "Detected: " + detectName(expr);
+   drawGraph(funcData, areaData);
   createSolid(f, a, b);
-  
-
-  drawGraph(funcData, areaData);
 }
 
 function drawGraph(funcData, areaData) {
@@ -130,7 +128,7 @@ function drawGraph(funcData, areaData) {
           grid: { color: "#333" }
         }
       }
-    }}
+    }
   });
 }
 
