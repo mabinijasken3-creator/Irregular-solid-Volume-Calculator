@@ -132,47 +132,36 @@ function drawGraph(funcData, areaData) {
   });
 }
 
-let scene, camera, renderer, mesh;
+ let scene, camera, renderer, mesh;
 
 function init3D() {
   const container = document.getElementById("threeContainer");
-  if (!container) return;
 
-  // Scene
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x121212);
 
-  // Camera
   camera = new THREE.PerspectiveCamera(
-    60,
+    45,
     container.clientWidth / container.clientHeight,
     0.1,
     1000
   );
-  camera.position.set(5, 5, 10);
 
-  // Renderer
+  camera.position.set(0, 5, 10);
+
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(container.clientWidth, container.clientHeight);
 
   container.innerHTML = "";
   container.appendChild(renderer.domElement);
 
-  // ✅ LIGHTING FIX (this is why yours was black)
-  const light1 = new THREE.DirectionalLight(0xffffff, 1);
-  light1.position.set(10, 10, 10);
-  scene.add(light1);
-
-  const light2 = new THREE.AmbientLight(0xffffff, 0.4);
-  scene.add(light2);
+  const light = new THREE.PointLight(0xffffff, 1);
+  light.position.set(10, 10, 10);
+  scene.add(light);
 
   animate();
 }
 
 function createSolid(f, a, b) {
-  const container = document.getElementById("threeContainer");
-  if (!container) return;
-
   if (!scene) init3D();
 
   if (mesh) scene.remove(mesh);
@@ -188,32 +177,22 @@ function createSolid(f, a, b) {
 
     try {
       y = Math.abs(f(x));
-      if (!isFinite(y)) y = 0;
     } catch {
       y = 0;
     }
 
-    // ✅ IMPORTANT FIX: swap axes for correct shape
     points.push(new THREE.Vector2(y, x));
   }
 
-  const geometry = new THREE.LatheGeometry(points, 60);
-
+  const geometry = new THREE.LatheGeometry(points, 50);
   const material = new THREE.MeshStandardMaterial({
     color: 0x9370db,
-    metalness: 0.3,
-    roughness: 0.4,
-    side: THREE.DoubleSide // ✅ ensures visibility
+    transparent: true,
+    opacity: 0.8,
+    wireframe: false
   });
 
   mesh = new THREE.Mesh(geometry, material);
-
-  // ✅ CENTERING FIX
-  geometry.computeBoundingBox();
-  const center = new THREE.Vector3();
-  geometry.boundingBox.getCenter(center);
-  mesh.position.sub(center);
-
   scene.add(mesh);
 }
 
@@ -225,4 +204,4 @@ function animate() {
   }
 
   renderer.render(scene, camera);
-    }
+}
