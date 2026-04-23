@@ -136,11 +136,18 @@ function drawGraph(funcData, areaData) {
 
 function init3D() {
   const container = document.getElementById("threeContainer");
+  if (!container) return;
+
+  // Ensure container has size
+  if (container.clientHeight === 0) {
+    container.style.height = "300px";
+  }
 
   scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x121212);
 
   camera = new THREE.PerspectiveCamera(
-    45,
+    60,
     container.clientWidth / container.clientHeight,
     0.1,
     1000
@@ -154,9 +161,13 @@ function init3D() {
   container.innerHTML = "";
   container.appendChild(renderer.domElement);
 
-  const light = new THREE.PointLight(0xffffff, 1);
-  light.position.set(10, 10, 10);
-  scene.add(light);
+  // ✅ STRONGER LIGHTING (fixes black object)
+  const light1 = new THREE.DirectionalLight(0xffffff, 1.2);
+  light1.position.set(10, 10, 10);
+  scene.add(light1);
+
+  const light2 = new THREE.AmbientLight(0xffffff, 0.5);
+  scene.add(light2);
 
   animate();
 }
@@ -179,7 +190,7 @@ function createSolid(f, a, b) {
 
   for (let i = 0; i <= steps; i++) {
     let x = a + i * h;
-    let y;
+    let y = 0;
 
     try {
       y = Math.abs(f(x));
@@ -202,26 +213,25 @@ function createSolid(f, a, b) {
 
   mesh = new THREE.Mesh(geometry, material);
 
-  // ✅ CENTER THE OBJECT
+  // CENTER
   geometry.computeBoundingBox();
   const center = new THREE.Vector3();
   geometry.boundingBox.getCenter(center);
   mesh.position.sub(center);
 
-  // ✅ AUTO SCALE (VERY IMPORTANT)
+  // SCALE SAFELY
   const size = new THREE.Vector3();
   geometry.boundingBox.getSize(size);
-  const maxDim = Math.max(size.x, size.y, size.z);
+  const maxDim = Math.max(size.x, size.y, size.z) || 1;
 
-  const scale = 5 / maxDim; // adjust "5" if needed
+  const scale = 4 / maxDim;
   mesh.scale.set(scale, scale, scale);
 
   scene.add(mesh);
 
-  // ✅ AUTO CAMERA POSITION
-  camera.position.set(0, 0, 10);
   camera.lookAt(0, 0, 0);
-    }
+}
+
 function animate() {
   requestAnimationFrame(animate);
 
@@ -229,5 +239,7 @@ function animate() {
     mesh.rotation.y += 0.01;
   }
 
-  renderer.render(scene, camera);
+  if (renderer && scene && camera) {
+    renderer.render(scene, camera);
+  }
 }
