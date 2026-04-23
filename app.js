@@ -153,7 +153,7 @@ function init3D() {
     1000
   );
 
-  camera.position.set(0, 0, 10);
+  camera.position.set(0, 0, 6);
 
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(container.clientWidth, container.clientHeight);
@@ -224,7 +224,7 @@ function createSolid(f, a, b) {
   geometry.boundingBox.getSize(size);
   const maxDim = Math.max(size.x, size.y, size.z) || 1;
 
-  const scale = 4 / maxDim;
+  const scale = 10 / maxDim;
   mesh.scale.set(scale, scale, scale);
 
   scene.add(mesh);
