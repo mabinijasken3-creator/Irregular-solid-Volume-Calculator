@@ -146,7 +146,7 @@ function init3D() {
     1000
   );
 
-  camera.position.set(0, 5, 10);
+  camera.position.set(0, 0, 10);
 
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(container.clientWidth, container.clientHeight);
@@ -162,12 +162,18 @@ function init3D() {
 }
 
 function createSolid(f, a, b) {
+  const container = document.getElementById("threeContainer");
+  if (!container) return;
+
   if (!scene) init3D();
 
-  if (mesh) scene.remove(mesh);
+  if (mesh) {
+    scene.remove(mesh);
+    mesh.geometry.dispose();
+    mesh.material.dispose();
+  }
 
   const points = [];
-
   let steps = 100;
   let h = (b - a) / steps;
 
@@ -177,6 +183,7 @@ function createSolid(f, a, b) {
 
     try {
       y = Math.abs(f(x));
+      if (!isFinite(y)) y = 0;
     } catch {
       y = 0;
     }
@@ -184,18 +191,37 @@ function createSolid(f, a, b) {
     points.push(new THREE.Vector2(y, x));
   }
 
-  const geometry = new THREE.LatheGeometry(points, 50);
+  const geometry = new THREE.LatheGeometry(points, 60);
+
   const material = new THREE.MeshStandardMaterial({
     color: 0x9370db,
-    transparent: true,
-    opacity: 0.8,
-    wireframe: false
+    metalness: 0.3,
+    roughness: 0.4,
+    side: THREE.DoubleSide
   });
 
   mesh = new THREE.Mesh(geometry, material);
-  scene.add(mesh);
-}
 
+  // ✅ CENTER THE OBJECT
+  geometry.computeBoundingBox();
+  const center = new THREE.Vector3();
+  geometry.boundingBox.getCenter(center);
+  mesh.position.sub(center);
+
+  // ✅ AUTO SCALE (VERY IMPORTANT)
+  const size = new THREE.Vector3();
+  geometry.boundingBox.getSize(size);
+  const maxDim = Math.max(size.x, size.y, size.z);
+
+  const scale = 5 / maxDim; // adjust "5" if needed
+  mesh.scale.set(scale, scale, scale);
+
+  scene.add(mesh);
+
+  // ✅ AUTO CAMERA POSITION
+  camera.position.set(0, 0, 10);
+  camera.lookAt(0, 0, 0);
+    }
 function animate() {
   requestAnimationFrame(animate);
 
