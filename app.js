@@ -144,7 +144,7 @@ function init3D() {
   }
 
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x121212);
+  scene.background = new THREE.Color(0x1A1A1A);
 
   camera = new THREE.PerspectiveCamera(
     60,
