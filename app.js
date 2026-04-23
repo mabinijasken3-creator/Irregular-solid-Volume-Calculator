@@ -86,6 +86,8 @@ function calculate() {
 
   document.getElementById("fname").innerText =
     "Detected: " + detectName(expr);
+  createSolid(f, a, b);
+  
 
   drawGraph(funcData, areaData);
 }
@@ -131,3 +133,77 @@ function drawGraph(funcData, areaData) {
     }
   });
 }
+
+let scene, camera, renderer, mesh;
+
+function init3D() {
+  const container = document.getElementById("threeContainer");
+
+  scene = new THREE.Scene();
+
+  camera = new THREE.PerspectiveCamera(
+    45,
+    container.clientWidth / container.clientHeight,
+    0.1,
+    1000
+  );
+
+  camera.position.set(0, 5, 10);
+
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(container.clientWidth, container.clientHeight);
+
+  container.innerHTML = "";
+  container.appendChild(renderer.domElement);
+
+  const light = new THREE.PointLight(0xffffff, 1);
+  light.position.set(10, 10, 10);
+  scene.add(light);
+
+  animate();
+}
+
+function createSolid(f, a, b) {
+  if (!scene) init3D();
+
+  if (mesh) scene.remove(mesh);
+
+  const points = [];
+
+  let steps = 100;
+  let h = (b - a) / steps;
+
+  for (let i = 0; i <= steps; i++) {
+    let x = a + i * h;
+    let y;
+
+    try {
+      y = Math.abs(f(x));
+    } catch {
+      y = 0;
+    }
+
+    points.push(new THREE.Vector2(y, x));
+  }
+
+  const geometry = new THREE.LatheGeometry(points, 50);
+  const material = new THREE.MeshStandardMaterial({
+    color: 0x9370db,
+    transparent: true,
+    opacity: 0.8,
+    wireframe: false
+  });
+
+  mesh = new THREE.Mesh(geometry, material);
+  scene.add(mesh);
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+
+  if (mesh) {
+    mesh.rotation.y += 0.01;
+  }
+
+  renderer.render(scene, camera);
+                }
